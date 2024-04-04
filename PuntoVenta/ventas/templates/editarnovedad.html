@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}
+    {% if user.is_authenticated %}
+        {{ username }}
+    {% else %}
+
+    {% endif %}
+{% endblock %}
+
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'index/css/b4.css' %}">
+<script src="{% static 'index/js/b4.js' %}"></script>
+
+
+<form method="POST" action="{% url 'editarNovedadEmpleado' novedadpersonal.idnovedadpersonal %}">
+    {% csrf_token %}
+
+    {% for field in form_editar %}
+    {% if field.name == 'fecha_inicio' %}
+        <div class="form-group">
+            <label for="id_fecha_inicio">{{ field.label }}</label>
+            <input type="date" name="{{ field.name }}" id="id_{{ field.name }}" class="form-control" value="{{ novedadpersonal.fecha_inicio|date:'Y-m-d' }}">
+            {% for error in field.errors %}
+                <p class="alarma">{{ error }}</p>
+            {% endfor %}
+        </div>
+    {% elif field.name == 'fechafin' %}
+        <div class="form-group">
+            <label for="id_fechafin">{{ field.label }}</label>
+            <input type="date" name="{{ field.name }}" id="id_{{ field.name }}" class="form-control" value="{{ novedadpersonal.fechafin|date:'Y-m-d' }}">
+            {% for error in field.errors %}
+                <p class="alarma">{{ error }}</p>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="form-group">
+            <label for="id_{{ field.name }}">{{ field.label }}</label>
+            {{ field|add_class:"form-control" }}
+            {% for error in field.errors %}
+                <p class="alarma">{{ error }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endfor %}
+
+{% for error in form_editar.non_field_errors %}
+    <p class="alarma">{{ error }}</p>
+{% endfor %}
+    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+</form>
+{% if messages %}
+{% for message in messages %}
+<script>
+    Swal.fire({
+        icon: 'error',
+        title: 'Error...',
+        text: "{{message}}",
+    })
+</script>
+{% endfor %}
+{% endif %}
+{% endblock %}

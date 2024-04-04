@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+{% block title %}
+    {% if user.is_authenticated %}
+        {{ username }}
+    {% else %}
+
+    {% endif %}
+{% endblock %}
+
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'index/css/b4.css' %}">
+<script src="{% static 'index/js/b4.js' %}"></script>
+
+
+<div id="AgregarPersonalModal" class="modal" style="overflow: scroll;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-info">
+                <h5 class="modal-title text-dark">Agregar nuevo</h5>
+            </div>
+            <div class="modal-body bg-dark text-white">
+                <form method="POST" action="{% url 'agregarEmpleado' %}" enctype="multipart/form-data">{% csrf_token %}
+                    {% for field in form_personal %}
+                    <p>{{field.label}} <br>
+                        {{field|add_class:"form-control text-dark"}}</p>
+                    {% for error in field.errors %}
+                    <p class="alarma">{{error}}</p>
+                    {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                    <p class="alarma">{{error}}</p>
+                    {% endfor %}
+            </div>
+            <div class="modal-footer bg-dark">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">
+                    Cancelar
+                </button>
+                <button type="submit" class="btn btn-success">
+                    Agregar
+                </button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+<div id="EliminarPersonalModal" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-info">
+                <h5 class="modal-title text-dark">Eliminar</h5>
+            </div>
+            <div class="modal-body bg-dark text-white">
+                <p class="labelmodal">¿Estás seguro?</p>
+                <form method="POST" action="{% url 'eliminarEmpleado' %}">{% csrf_token %}
+                    <input type="hidden" id="id_personal_eliminar" name="id_personal_eliminar">
+            </div>
+            <div class="modal-footer bg-dark text-white">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">
+                   Volver
+                </button>
+                <button type="submit" class="btn btn-success">
+                    Aceptar
+                </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <h3 class="text-center">Empleados   <i class="fas fa-users"></i></h3> <! -- Es para cambiar el icono xd -- >
+        <div class="col-md-3 pb-2">
+            {% if perms.ventas.add_empleado %}
+
+            <a href="#AgregarPersonalModal"
+                data-toggle="modal" data-dismiss="modal">
+                <button type="button" class="btn btn-success">
+                    Agregar Empleado
+                    <i class="fas fa-plus-circle"></i>
+                </button>
+            </a>
+            {% endif %}
+        </div>
+        <div class="card card-body" style="overflow:scroll">
+            <table class="table table-hover table-primary" id="myTable">
+                <thead>
+                    <tr>
+                        <th># ID</th>
+                        <th>Documento Identidad</th>
+                        <th>Primer Nombre</th>
+                        <th>Segundo Nombre</th>
+                        <th>Primer Apellido</th>
+                        <th>Segundo Apellido</th>
+                        <th>Correo Electronico</th>
+                        <th>Telefono</th>
+                        <th>Direccion</th>
+                        <th>Barrio</th>
+                        <th>Ciudad</th>
+                        <th>Genero</th>
+                        <th>Código Empleado</th>
+                        <th>Fecha Ingreso</th>
+                        <th>Fecha Nacimiento</th>
+                        <th>Salario</th>
+                        <th>RH</th>
+                        <th>EPS</th>
+                        <th>ARL</th>                        
+                        <th>Fondo Pension</th>
+                        <th>Cargo Empleado</th>
+                        <th>Opciones</th>
+                    </tr>
+                </thead>
+                <tbody class="text-dark">
+                    {% for i in empleado %}
+                    <tr>
+                        <td>{{forloop.counter}}</td>
+                        <td>{{i.idpersona.documentoidentidad}}</td>
+                        <td>{{i.idpersona.primer_nombre}}</td>
+                        <td>{{i.idpersona.segundo_nombre}}</td>
+                        <td>{{i.idpersona.primer_apellido}}</td>
+                        <td>{{i.idpersona.segundo_apellido}}</td>
+                        <td>{{i.idpersona.idcontacto.correo}}</td>
+                        <td>{{i.idpersona.idcontacto.telefono}}</td>
+                        <td>{{i.idpersona.iddireccion.direccion}}</td>
+                        <td>{{i.idpersona.iddireccion.barrio}}</td>
+                        <td>{{i.idpersona.iddireccion.idciudad.ciudad}}</td>
+                        <td>{{i.idpersona.genero}}</td>
+                        <td>{{i.cod_empleado }}</td>
+                        <td>{{i.fecha_ingreso }}</td>
+                        <td>{{i.fecha_nacimiento }}</td>
+                        <td>{{i.salario}}</td>
+                        <td>{{i.rh}}</td>
+                        <td>{{i.ideps.eps }}</td>
+                        <td>{{i.idarl.arl }}</td>
+                        <td>{{i.idfondo_pension.fondo_pension }}</td>
+                        <td>{{i.idcargo_empleado.cargo_empleado}}</td>
+                        <td>{{i.iduser}}</td>
+                        <td>
+                            {% if perms.ventas.change_empleado %}
+                            <a href="{% url 'editarEmpleado' i.cod_empleado %}" class="btn btn-dark-outline btn-sm">
+                                <img src="{% static 'index/img/editar.png' %}" alt="Error" width="30">
+                            </a>
+                            {% endif %}
+
+                            {% if perms.ventas.delete_empleado %}
+                                    <button onclick="eliminarPersonal('{{i.cod_empleado}}')" class="btn btn-dark-outline btn-sm"
+                                    data-toggle="modal" href="#EliminarPersonalModal"><img
+                                        src="{% static 'index/img/delete.png' %}" alt="Error" width="30"></button>
+                            </td>
+                            {% endif %}
+
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% if messages %}
+{% for message in messages %}
+<script>
+    Swal.fire({
+        icon: 'error',
+        title: 'Error...',
+        text: "{{message}}",
+    })
+</script>
+{% endfor %}
+{% endif %}
+{% endblock %}

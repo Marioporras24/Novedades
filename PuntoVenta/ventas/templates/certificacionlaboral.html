@@ -1,0 +1,17 @@
+<html>
+<head>
+    <style>
+        /* Estilos CSS aquí */
+    </style>
+</head>
+<body>
+    <img src="{{ empresa_logo_url }}" alt="Logo de la empresa">
+    <h1>Certificación Laboral</h1>
+    <p>Cargo: {{ empleado.idcargo_empleado }}</p>
+    <p>Fecha de Inicio: {{ empleado.fecha_ingreso }}</p>
+    <p>Salario: {{ empleado.salario }}</p>
+    <p>Nombres: {{ empleado.iddocumento.nombres }}</p>
+    <p>Documento: {{ empleado.iddocumento.numero_documento }}</p>
+    <p>Firma Digital de la Empresa: {{ empresa_firma_digital }}</p>
+</body>
+</html>
